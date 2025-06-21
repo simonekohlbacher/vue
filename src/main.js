@@ -11,12 +11,18 @@ import {
   faCloudSunRain,
   faHouse,
   faBars,
-  faRightFromBracket
+  faRightFromBracket,
+  faHourglassHalf,
+  faCircleCheck,
+  faBan,
+  faPlus,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons'
 
 
+
 // Icons in die Library laden
-library.add(faHouse, faCloudSunRain, faCalendarDays, faBars, faRightFromBracket)
+library.add(faHouse, faCloudSunRain, faCalendarDays, faBars, faRightFromBracket, faHourglassHalf, faCircleCheck, faBan, faPlus, faTrash)
 
 
 const app = createApp(App)
