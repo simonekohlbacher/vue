@@ -48,30 +48,31 @@ onUnmounted(() => {
 
 <template>
 
+  <h2 class="text-2xl mb-4">Zeit bis zum Baustart</h2>
   <div class="grid auto-cols-max grid-flow-col gap-5 text-center">
     <div class="flex flex-col">
       <div class="flex flex-col">
         <span class="font-mono text-5xl">{{ days }}</span>
-        days
+        Tage
       </div>
     </div>
     <div class="flex flex-col">
     <span class="countdown font-mono text-5xl">
       <span :style="`--value:${hours}`">{{ hours }}</span>
     </span>
-      hours
+      Stunden
     </div>
     <div class="flex flex-col">
     <span class="countdown font-mono text-5xl">
       <span :style="`--value:${minutes}`">{{ minutes }}</span>
     </span>
-      min
+      Minuten
     </div>
     <div class="flex flex-col">
     <span class="countdown font-mono text-5xl">
       <span :style="`--value:${seconds}`">{{ seconds }}</span>
     </span>
-      sec
+      Sekunden
     </div>
   </div>
 

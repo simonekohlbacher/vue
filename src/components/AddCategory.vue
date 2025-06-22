@@ -10,7 +10,6 @@ const newCategoryTitle = ref('')
 const newCategoryImage = ref(null)
 const newCategoryDescription = ref('')
 const newCategoryDeadline = ref(null)
-
 const modalRef = ref(null) // Zugriff auf das Modal
 
 const handleCreateCategory = () => {
@@ -18,26 +17,15 @@ const handleCreateCategory = () => {
     alert('Bitte Titel und Fälligkeitsdatum eingeben')
     return
   }
-
-  // immer über .value.files zugreifen:
   const img = newCategoryImage.value?.files?.[0]
-
-  createCategory(
-    newCategoryTitle.value,
-    newCategoryDescription.value,
-    img,
-    newCategoryDeadline.value
-  )
-
-  // Felder leeren
+  createCategory(newCategoryTitle.value, newCategoryDescription.value, img, newCategoryDeadline.value)
+  // Felder leeren & Modal schließen
   newCategoryTitle.value = ''
   newCategoryDescription.value = ''
   newCategoryDeadline.value = null
   if (newCategoryImage.value) {
-    newCategoryImage.value.value = '' // input leeren
+    newCategoryImage.value.value = ''
   }
-
-  // Modal schließen:
   if (modalRef.value) {
     modalRef.value.close()
   }
@@ -46,7 +34,6 @@ const handleCreateCategory = () => {
 
 
 <template>
-
   <!-- Modal -->
   <Modal btnClass="btn btn-success" btnText="Neue Kategorie" ref="modalRef">
       <div class="flex flex-col gap-5">
@@ -68,7 +55,6 @@ const handleCreateCategory = () => {
           <input v-model="newCategoryDeadline" type="date" class="input input-sm w-full"/>
         </label>
 
-
         <label class="floating-label w-full">
           <span>Bild</span>
           <input ref="newCategoryImage" type="file" class="file-input file-input-sm file-input-ghost w-full"/>
@@ -76,6 +62,5 @@ const handleCreateCategory = () => {
 
         <button class="btn btn-success" @click="handleCreateCategory">Speichern</button>
       </div>
-
   </Modal>
 </template>

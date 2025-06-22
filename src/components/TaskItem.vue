@@ -1,6 +1,9 @@
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { pb } from '@/pocketbase'
+import { useTasks } from '@/useTasks.js'
+
+const { deleteTask } = useTasks()
 
 const props = defineProps({
   task: {
@@ -27,6 +30,8 @@ const editState = reactive({
   deadline: { editing: false, value: null }
 })
 
+
+
 onMounted(() => {
   Object.assign(localTask, {
     title: props.task.title,
@@ -44,6 +49,19 @@ function updateDiff() {
 }
 
 watch(() => localTask.costs, () => updateDiff())
+
+function formatEuro(value, empty = '—') {
+  if (value == null) return empty;
+  return Number(value).toLocaleString('de-DE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + ' €';
+}
+
+const formattedEstimate = computed(() => formatEuro(localTask.costs_estimate));
+const formattedCosts = computed(() => formatEuro(localTask.costs));
+const formattedDiff = computed(() => formatEuro(diff.value, ''));
+
 
 function startEditing(field) {
   if (field === 'deadline') {
@@ -70,8 +88,6 @@ async function save(field) {
   const payload = {}
   payload[field] = localTask[field] || ''
 
-  console.log('Payload:', payload)
-
   editState[field].editing = false
 
   try {
@@ -82,14 +98,6 @@ async function save(field) {
   }
 }
 
-function formatDateToInput(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
 
 function formatInputToDate(inputStr) {
   if (!inputStr) return null
@@ -110,23 +118,18 @@ async function updateStatus() {
 
 function handleDeleteTask(taskId) {
   if (confirm('Möchtest du diese Aufgabe wirklich löschen?')) {
-    pb.collection('tasks').delete(taskId)
-      .then(() => {
-        window.location.reload()
-      })
-      .catch(error => {
-        console.error('Fehler beim Löschen der Aufgabe:', error)
-      })
+    deleteTask(taskId);
   }
 }
+
+
 </script>
 
 <template>
-  <div
-    class="relative rounded-2xl shadow-md p-6 flex flex-col gap-4 transition duration-200 hover:shadow-xl">
+  <div class="relative rounded-2xl shadow-md p-6 flex flex-col gap-4 transition duration-200 hover:shadow-xl">
 
     <!-- Deadline -->
-    <div class="absolute top-8 right-2 flex items-center gap-1 text-sm text-gray-600">
+    <div class="absolute top-8 right-2 flex items-center gap-1 text-sm">
       <font-awesome-icon :icon="['fas', 'calendar-days']" />
       <span
         v-if="!editState.deadline.editing"
@@ -209,13 +212,13 @@ function handleDeleteTask(taskId) {
     <div class="mt-auto space-y-2 text-sm">
       <div>
         <span class="font-semibold">Geschätzte Kosten:</span>
-        {{ localTask.costs_estimate ?? '—' }} €
+        {{ formattedEstimate }}
       </div>
 
       <div class="flex items-center flex-wrap gap-2">
         <label class="font-semibold whitespace-nowrap">Tatsächliche Kosten:</label>
         <span v-if="!editState.costs.editing" class="cursor-pointer select-none" @click="startEditing('costs')">
-          {{ localTask.costs }} €
+          {{ formattedCosts }}
         </span>
         <input
           v-else
@@ -230,10 +233,10 @@ function handleDeleteTask(taskId) {
         />
       </div>
 
-      <div v-if="diff !== null && diff > 0">
-        <span class="font-semibold">Differenz:</span>
+      <div v-if="diff !== null && diff > 0 || diff < 0">
+        <span class="font-semibold">Differenz: </span>
         <span :class="diff >= 0 ? 'text-red-600' : 'text-green-600'">
-          {{ diff }} €
+           {{ formattedDiff }}
         </span>
       </div>
     </div>

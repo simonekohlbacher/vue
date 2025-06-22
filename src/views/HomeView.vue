@@ -7,9 +7,16 @@ import Timer from "@/components/Timer.vue";
 import { useAuth } from "@/useAuth.js";
 const { currentUser } = useAuth();
 import { useCategories } from '@/useCategories.js'
-const { totalDiff, totalEstimate, totalCosts } = useCategories()
+import { computed } from 'vue';
 
+const { totalDiff, totalEstimate, totalCosts, categories } = useCategories()
 const budget = currentUser.value.budget;
+
+const showTimer = computed(() => {
+  if (!currentUser.value?.start) return false
+  return new Date(currentUser.value.start) > new Date()
+})
+
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('de-DE', {
     style: 'currency',
@@ -18,36 +25,36 @@ const formatCurrency = (value) => {
   }).format(value ?? 0);
 };
 
-
 </script>
 
 <template>
   <AppNavigation>
 
-    <h2 class="text-4xl font-bold">Servus {{ currentUser.name }}!</h2>
-    <p class="text-xl font-bold mb-8">Heute ist ein schöner Tag zum Bauen.</p>
+    <div class="m-12">
+      <h2 class="text-3xl font-bold">Servus {{ currentUser.name }}!</h2>
+      <p class="text-xl font-bold mb-8">Heute ist ein schöner Tag zum Bauen.</p>
+      <hr>
+    </div>
 
-    <Timer/>
-
-
-
+    <div v-if="showTimer" class="ml-20 mb-20">
+      <Timer />
+    </div>
 
     <div class="p-20">
-      <h2 class="text-4xl font-bold mb-8">Kategorien</h2>
-      <p>sfgsdgdsgsdfdsf</p>
+      <h2 class="text-3xl font-bold mb-2">ToDos</h2>
+      <p>Hier siehst du alle deine Projektkategorien auf einen Blick. Verwalte sie, füge neue hinzu und behalte deine Baustelle im Griff. Das Bearbeiten einer Kategorie kannst direkt in der jeweiligen Detail-Ansicht mit Klick auf das jeweilige Feld vornehmen. Der Status aktualisiert sich je nach Fortschritt der Aufgaben der jeweiligen Kategorie.</p>
       <div class="my-6 ">
         <AddCategory />
       </div>
       <CategoryList />
     </div>
 
-    <div v-if="useCategories.length" class="p-20">
-      <h2 class="text-4xl font-bold mb-8">Zeit</h2>
+    <div v-if="categories.length" class="p-20">
+      <h2 class="text-3xl font-bold mb-12 text-center">Alles im Blick</h2>
       <TimeLine />
     </div>
 
     <div class="p-20">
-      <h2 class="text-4xl font-bold mb-8">Money</h2>
       <div class="mb-6 p-4  rounded-lg shadow-sm border ">
         <dl class="space-y-2">
           <div class="flex justify-between">
@@ -75,16 +82,3 @@ const formatCurrency = (value) => {
   </AppNavigation>
 </template>
 
-<style>
-.screensaver {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: black;
-  color: white;
-  font-size: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-</style>

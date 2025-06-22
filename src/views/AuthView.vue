@@ -25,7 +25,6 @@ async function handleSubmit() {
     await router.push('/home');
   }
 }
-
 </script>
 
 <template>
@@ -40,8 +39,6 @@ async function handleSubmit() {
         <p class="mb-5">
           Logge dich ein oder registriere dich, um loszulegen.
         </p>
-
-        <!-- Auth Card -->
         <section class="flex justify-center items-center text-neutral w-full">
           <div class="card w-full bg-base-100 shadow-xl">
             <div class="card-body">
@@ -99,8 +96,6 @@ async function handleSubmit() {
                 </svg>
                 <input v-model="start" type="date" placeholder="Baustart" required />
               </label>
-
-
               <p v-if="isRegister" class="text-xs mt-4">Für genaue Wettervorhersagen benötigen wir die Koordinaten deines Brauorts.</p>
 
               <label v-if="isRegister" class="input validator w-full">
@@ -123,18 +118,8 @@ async function handleSubmit() {
             </div>
           </div>
         </section>
-
-        <a
-          href="https://www.pexels.com/de-de/foto/helm-skizzen-sonnendurchflutete-papiere-7937319/"
-          target="_blank"
-          class="mt-10 block text-sm underline">
-          Foto von Pavel Danilyuk von Pexels
-        </a>
-
-        <p class="text-xs mt-4">Copyright © Simone Kohlbacher {{new Date().getFullYear()}} - All right reserved <br>
-          kohlbacher.simone@gmail.com
-        </p>
-
+        <a href="https://www.pexels.com/de-de/foto/helm-skizzen-sonnendurchflutete-papiere-7937319/" target="_blank" class="mt-10 block text-sm underline">Foto von Pavel Danilyuk von Pexels</a>
+        <p class="text-xs mt-4">Copyright © Simone Kohlbacher {{new Date().getFullYear()}} - All right reserved <br>kohlbacher.simone@gmail.com</p>
       </div>
     </div>
   </div>

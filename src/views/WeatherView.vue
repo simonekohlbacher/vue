@@ -8,8 +8,6 @@ const weatherData = ref([])
 const { currentUser } = useAuth();
 const cityName = ref('');
 
-
-
 onMounted(async () => {
   // Meteomatics API Zugangsdaten und Parameter
   // https://www.meteomatics.com/en/api/getting-started/
