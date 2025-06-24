@@ -1,4 +1,4 @@
-import { onMounted, readonly, ref, computed } from 'vue'
+import { onMounted, readonly, ref } from 'vue'
 import { pb } from './pocketbase.js'
 import { useAuth } from '@/useAuth.js'
 import { useWebNotification } from '@vueuse/core'
@@ -7,29 +7,8 @@ import { useWebNotification } from '@vueuse/core'
 // singleton variablen
 const categories = ref([])
 const currentCategory = ref(null)
-const tasks = ref([])
-
-// Berechnete variablen für die Gesamtkosten und -schätzungen
-const totalEstimate = computed(() => {
-  return tasks.value.reduce((sum, task) => {
-    return sum + (task.costs_estimate ?? 0)
-  }, 0)
-})
-
-const totalCosts = computed(() => {
-  return tasks.value.reduce((sum, task) => {
-    return sum + (task.costs ?? 0)
-  }, 0)
-})
-
-const totalDiff = computed(() => {
-  return tasks.value.reduce((sum, task) => {
-    const actual = task.costs ?? 0
-    const estimate = task.costs_estimate ?? 0
-    const diff = actual > 0 ? actual - estimate : 0
-    return sum + diff
-  }, 0)
-})
+// nur die tasks der aktuellen Kategorie
+const categoryTasks = ref([])
 
 export function useCategories() {
   const { currentUser } = useAuth()
@@ -66,9 +45,8 @@ export function useCategories() {
       localStorage.currentCategory = JSON.stringify(foundCategory)
 
       // tasks laden
-      tasks.value = await pb.collection('tasks').getFullList({
-        filter: `category = "${categoryId}"`,
-        expand: 'user'
+      categoryTasks.value = await pb.collection('tasks').getFullList({
+        filter: `category = "${categoryId}" && user = "${currentUser.value.id}"`,
       });
     }
   }
@@ -107,10 +85,10 @@ export function useCategories() {
   const deleteCategory = async (id) => {
     try {
       // zuerst prüfen, ob es Tasks in dieser Kategorie gibt
-      const tasks = await pb.collection('tasks').getFullList({
+      const categoryTasks = await pb.collection('tasks').getFullList({
         filter: `category="${id}"`,
       })
-      if (tasks.length > 0) {
+      if (categoryTasks.length > 0) {
         alert('Diese Kategorie kann nicht gelöscht werden, weil noch Tasks existieren.')
         return false
       }
@@ -131,8 +109,7 @@ export function useCategories() {
       case 'in_progress': return ['fas', 'hourglass-half'];
       case 'done':return ['fas', 'circle-check']
       case 'not_started':return ['fas', 'ban']
-      default:
-        return ['fas', 'ban']
+      default:return ['fas', 'ban']
     }
   };
 
@@ -169,14 +146,11 @@ export function useCategories() {
   return {
     categories: readonly(categories),
     currentCategory: currentCategory,
-    tasks: readonly(tasks),
+    categoryTasks: readonly(categoryTasks),
     fetchCategories,
     setCategory,
     createCategory,
     deleteCategory,
-    totalDiff: readonly(totalDiff),
-    totalEstimate: readonly(totalEstimate),
-    totalCosts: readonly(totalCosts),
     getStateIcon,
     formatDateToInput,
     formatInputToDate,

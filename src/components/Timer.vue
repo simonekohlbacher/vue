@@ -1,10 +1,8 @@
-<!-- https://daisyui.com/components/countdown/ -->
-
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuth } from "@/useAuth.js";
-const { currentUser } = useAuth();
 
+const { currentUser } = useAuth();
 const targetDate = new Date(currentUser.value.start);
 
 // Werte für days/hours/minutes/seconds
@@ -15,10 +13,19 @@ const seconds = ref(0);
 
 let interval;
 
+onMounted(() => {
+  updateCountdown();
+  // jede sekunden runter zählen
+  interval = setInterval(updateCountdown, 1000);
+});
+
+// logic help from chat
 const updateCountdown = () => {
   const now = new Date();
+  // zeit die runtergezählt wird
   const diff = targetDate.getTime() - now.getTime();
 
+  // wenn diff kleiner oder gleich 0 ist, Timer stoppen und auf 0 setzen
   if (diff <= 0) {
     days.value = 0;
     hours.value = 0;
@@ -28,26 +35,18 @@ const updateCountdown = () => {
     return;
   }
 
+  // rest zeit in Tage, Stunden, Minuten und Sekunden umrechnen
   days.value = Math.floor(diff / (1000 * 60 * 60 * 24));
   hours.value = Math.floor((diff / (1000 * 60 * 60)) % 24);
   minutes.value = Math.floor((diff / (1000 * 60)) % 60);
   seconds.value = Math.floor((diff / 1000) % 60);
 };
 
-
-onMounted(() => {
-  updateCountdown();
-  interval = setInterval(updateCountdown, 1000);
-});
-
-onUnmounted(() => {
-  clearInterval(interval);
-});
 </script>
 
 
 <template>
-
+  <!-- https://daisyui.com/components/countdown/ -->
   <h2 class="text-2xl mb-4">Zeit bis zum Baustart</h2>
   <div class="grid auto-cols-max grid-flow-col gap-5 text-center">
     <div class="flex flex-col">
@@ -75,7 +74,5 @@ onUnmounted(() => {
       Sekunden
     </div>
   </div>
-
-
 </template>
 

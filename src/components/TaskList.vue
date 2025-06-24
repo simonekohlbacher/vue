@@ -5,11 +5,9 @@ import { ref } from 'vue'
 import { useTasks } from '@/useTasks.js'
 import { useCategories } from '@/useCategories.js'
 
-
 const { createTask } = useTasks();
 // tasks werden in useCategories.js geladen gleich mir jeweiliger kategorie
-const { tasks } = useCategories();
-
+const { categoryTasks, currentCategory } = useCategories();
 // Form-Daten
 const newTaskTitle = ref('')
 const newTaskDescription = ref('')
@@ -30,20 +28,10 @@ const handleCreateTask = () => {
   newTaskCostsEstimated.value = 0
   newTaskComment.value = ''
   newTaskDeadline.value = null
-
   if (modalRef.value) {
     modalRef.value.close()
   }
 }
-
-function formatDateForInput(dateStr) {
-  const d = new Date(dateStr)
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 
 </script>
 
@@ -75,14 +63,19 @@ function formatDateForInput(dateStr) {
 
       <label class="floating-label w-full">
         <span>Deadline*</span>
-        <input v-model="newTaskDeadline" type="date" class="input input-sm w-full" :max="currentCategory?.deadline ? formatDateForInput(currentCategory.deadline) : null" />
+        <input v-model="newTaskDeadline" type="date" class="input input-sm w-full"
+               :max="currentCategory.deadline.substring(0, 10)" />
       </label>
       <button class="btn btn-success" @click="handleCreateTask">Speichern</button>
     </div>
   </Modal>
 
-  <div v-if="tasks.length > 0" class="flex flex-col gap-10 mt-8">
-    <TaskItem v-for="task in tasks" :key="task.id" :task="task" />
+  <div v-if="categoryTasks.length > 0" class="flex flex-col gap-10 mt-8">
+    <TaskItem
+      v-for="categoryTask in categoryTasks"
+      :key="categoryTask.id"
+      :categoryTask="categoryTask" />
+
   </div>
   <div v-else class="text-gray-400 mt-8">Noch keine Aufgaben vorhanden.</div>
 

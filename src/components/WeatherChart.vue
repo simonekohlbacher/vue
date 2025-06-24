@@ -1,5 +1,5 @@
 
-// with Chart.js & vue-chartjs
+<!-- with Chart.js & vue-chartjs & chat -->
 <script setup>
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale } from 'chart.js'

@@ -1,12 +1,13 @@
 <script setup>
 import { ref, reactive, watch, onMounted, computed } from 'vue'
-import { pb } from '@/pocketbase'
 import { useTasks } from '@/useTasks.js'
+import { useCategories } from '@/useCategories.js'
 
-const { deleteTask } = useTasks()
+const { deleteTask, formatCurrency, updateTaskField } = useTasks()
+const { formatInputToDate, currentCategory } = useCategories()
 
 const props = defineProps({
-  task: {
+  categoryTask: {
     type: Object,
     required: true
   }
@@ -31,17 +32,15 @@ const editState = reactive({
 })
 
 
-
 onMounted(() => {
   Object.assign(localTask, {
-    title: props.task.title,
-    description: props.task.description,
-    state: props.task.state,
-    costs_estimate: props.task.costs_estimate ?? 0,
-    costs: props.task.costs ?? 0,
-    deadline: props.task.deadline ?? null
+    title: props.categoryTask.title,
+    description: props.categoryTask.description,
+    state: props.categoryTask.state,
+    costs_estimate: props.categoryTask.costs_estimate ?? 0,
+    costs: props.categoryTask.costs ?? 0,
+    deadline: props.categoryTask.deadline ?? null
   })
-  updateDiff()
 })
 
 function updateDiff() {
@@ -50,18 +49,9 @@ function updateDiff() {
 
 watch(() => localTask.costs, () => updateDiff())
 
-function formatEuro(value, empty = '—') {
-  if (value == null) return empty;
-  return Number(value).toLocaleString('de-DE', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }) + ' €';
-}
-
-const formattedEstimate = computed(() => formatEuro(localTask.costs_estimate));
-const formattedCosts = computed(() => formatEuro(localTask.costs));
-const formattedDiff = computed(() => formatEuro(diff.value, ''));
-
+const formattedEstimate = computed(() => formatCurrency(localTask.costs_estimate));
+const formattedCosts = computed(() => formatCurrency(localTask.costs));
+const formattedDiff = computed(() => formatCurrency(diff.value, ''));
 
 function startEditing(field) {
   if (field === 'deadline') {
@@ -76,45 +66,28 @@ function startEditing(field) {
   editState[field].editing = true
 }
 
-async function save(field) {
+
+function handleEdit(field) {
   if (field === 'deadline') {
     localTask.deadline = editState.deadline.value
       ? formatInputToDate(editState.deadline.value)
       : ''
+  } else if (field === 'state') {
+    // Kein Zugriff auf editState.state.value, sondern direkt localTask.state nehmen
+    // localTask.state ist ja schon v-model gebunden, daher brauchst du hier nix machen
   } else {
+    // Für alle anderen Felder aus editState
     localTask[field] = editState[field].value
   }
+  const payloadValue = localTask[field] || ''
+  updateTaskField(props.categoryTask.id, field, payloadValue)
 
-  const payload = {}
-  payload[field] = localTask[field] || ''
-
-  editState[field].editing = false
-
-  try {
-    await pb.collection('tasks').update(props.task.id, payload)
-    if (field === 'costs') updateDiff()
-  } catch (error) {
-    console.error(`Fehler beim Speichern von ${field}:`, error)
+  if (editState[field]) {
+    editState[field].editing = false
   }
 }
 
 
-function formatInputToDate(inputStr) {
-  if (!inputStr) return null
-  const d = new Date(inputStr)
-  return d.toISOString()
-}
-
-
-async function updateStatus() {
-  try {
-    await pb.collection('tasks').update(props.task.id, {
-      state: localTask.state
-    })
-  } catch (error) {
-    console.error('Fehler beim Aktualisieren des Status:', error)
-  }
-}
 
 function handleDeleteTask(taskId) {
   if (confirm('Möchtest du diese Aufgabe wirklich löschen?')) {
@@ -142,53 +115,40 @@ function handleDeleteTask(taskId) {
         v-else
         type="date"
         v-model="editState.deadline.value"
-        @blur="() => save('deadline')"
-        @keyup.enter="() => save('deadline')"
+        :max="currentCategory.deadline.substring(0, 10)"
+        @blur="() => handleEdit('deadline')"
+        @keyup.enter="() => handleEdit('deadline')"
         class="border rounded px-2 py-1 font-medium ml-2"
         autofocus
       />
+
     </div>
 
     <!-- Löschen -->
     <button
-      @click="handleDeleteTask(props.task.id)"
+      @click="handleDeleteTask(props.categoryTask.id)"
       class="absolute top-1 right-2 hover:text-accent">
       <font-awesome-icon :icon="['fas', 'trash']" />
     </button>
 
     <!-- Titel -->
     <h2 class="text-xl font-bold">
-      <span
-        v-if="!editState.title.editing"
-        class="cursor-pointer select-none"
-        @click="startEditing('title')"
-      >
+      <span v-if="!editState.title.editing" class="cursor-pointer select-none" @click="startEditing('title')">
         {{ localTask.title }}
       </span>
-      <input
-        v-else
-        v-model="editState.title.value"
-        @blur="() => save('title')"
-        @keyup.enter="() => save('title')"
-        class="border rounded px-2 py-1 w-full text-xl font-bold"
-        autofocus
-      />
+      <input v-else v-model="editState.title.value" @blur="() => handleEdit('title')" @keyup.enter="() => handleEdit('title')" class="border rounded px-2 py-1 w-full text-xl font-bold" autofocus />
     </h2>
 
     <!-- Beschreibung -->
-    <div>
-      <p
-        v-if="!editState.description.editing"
-        class="cursor-pointer select-none"
-        @click="startEditing('description')"
-      >
-        {{ localTask.description || 'Keine Beschreibung' }}
+    <div v-if="localTask.description">
+      <p v-if="!editState.description.editing" class="cursor-pointer select-none" @click="startEditing('description')">
+        {{ localTask.description }}
       </p>
       <textarea
         v-else
         v-model="editState.description.value"
-        @blur="() => save('description')"
-        @keyup.enter="() => save('description')"
+        @blur="() => handleEdit('description')"
+        @keyup.enter="() => handleEdit('description')"
         class="border rounded w-full p-2"
         autofocus
       ></textarea>
@@ -199,7 +159,7 @@ function handleDeleteTask(taskId) {
       <label class="block text-sm font-semibold mb-1">Status:</label>
       <select
         v-model="localTask.state"
-        @change="updateStatus"
+        @change="handleEdit('state')"
         class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring"
       >
         <option value="not_started">Noch nicht begonnen</option>
@@ -223,8 +183,8 @@ function handleDeleteTask(taskId) {
         <input
           v-else
           v-model.number="editState.costs.value"
-          @blur="() => save('costs')"
-          @keyup.enter="() => save('costs')"
+          @blur="() => handleEdit('costs')"
+          @keyup.enter="() => handleEdit('costs')"
           type="number"
           min="0"
           step="0.01"

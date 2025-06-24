@@ -1,29 +1,28 @@
 <script setup>
+import { computed, onMounted } from 'vue'
 import CategoryList from "@/components/CategoryList.vue";
 import TimeLine from "@/components/TimeLine.vue";
 import AddCategory from "@/components/AddCategory.vue";
 import AppNavigation from "@/components/layouts/AppNavigation.vue";
 import Timer from "@/components/Timer.vue";
 import { useAuth } from "@/useAuth.js";
-const { currentUser } = useAuth();
+import { useTasks } from '@/useTasks.js';
 import { useCategories } from '@/useCategories.js'
-import { computed } from 'vue';
 
-const { totalDiff, totalEstimate, totalCosts, categories } = useCategories()
+const { currentUser } = useAuth();
+const { totalDiff, totalEstimate, totalCosts, fetchTasks, formatCurrency } = useTasks();
+const { categories } = useCategories();
 const budget = currentUser.value.budget;
+
+onMounted(() => {
+  fetchTasks()
+})
 
 const showTimer = computed(() => {
   if (!currentUser.value?.start) return false
   return new Date(currentUser.value.start) > new Date()
 })
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-  }).format(value ?? 0);
-};
 
 </script>
 

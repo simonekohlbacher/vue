@@ -2,7 +2,7 @@
 import SideBar from '@/components/SideBar.vue'
 import { RouterLink } from 'vue-router'
 import { useIdle } from '@vueuse/core'
-import { watch, ref, onMounted, onUnmounted } from 'vue'
+import { watch, ref, onMounted } from 'vue'
 
 const { idle } = useIdle(60 * 1000)
 const showScreensaver = ref(false)
@@ -22,35 +22,32 @@ const wisdoms = [
 
 const currentIndex = ref(0)
 const currentWisdom = ref(wisdoms[currentIndex.value])
-let intervalId = null
+let intervalId = null;
 
 onMounted(() => {
+  // richtiges theme holen
   const saved = localStorage.getItem('darkMode')
   darkMode.value = saved === 'true'
   updateTheme()
+  // Screensaver initialisieren, help from chat
   intervalId = setInterval(() => {
     currentIndex.value = (currentIndex.value + 1) % wisdoms.length
     currentWisdom.value = wisdoms[currentIndex.value]
   }, 5000)
 })
 
-// Wenn sich darkMode ändert → speichern & anwenden
+// dark mode über localStorage speichern damit über seite und sessions hinweg verfügbar
 function toggleDarkMode() {
   darkMode.value = !darkMode.value
   localStorage.setItem('darkMode', darkMode.value)
   updateTheme()
 }
 
-// Eigentliche Anwendung auf <html>
+//  Anwendung auf <html>
 function updateTheme() {
   const theme = darkMode.value ? 'forest' : 'light'
   document.documentElement.setAttribute('data-theme', theme)
 }
-
-onUnmounted(() => {
-  clearInterval(intervalId)
-})
-
 </script>
 
 

@@ -42,7 +42,7 @@ watch(() => props.open, () => {
   if (props.open) {
     handleOpen();
   } else {
-    close(); // statt dialog.value?.close()
+    close();
   }
 });
 
@@ -73,7 +73,3 @@ watch(() => props.open, () => {
   </dialog>
 
 </template>
-
-<style scoped>
-
-</style>
