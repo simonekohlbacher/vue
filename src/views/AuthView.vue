@@ -30,7 +30,7 @@ async function handleSubmit() {
 <template>
   <div
     class="hero min-h-screen bg-cover bg-center"
-    style="background-image: url('/src/assets/planen.jpg');">
+    style="background-image: url('/planen.jpg');">
     <div class="hero-overlay min-h-screen"></div>
     <div class="hero-content text-neutral-content text-center">
       <div class="max-w-md w-full">
