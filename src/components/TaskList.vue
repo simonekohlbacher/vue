@@ -5,9 +5,9 @@ import { ref } from 'vue'
 import { useTasks } from '@/useTasks.js'
 import { useCategories } from '@/useCategories.js'
 
-const { createTask } = useTasks();
-// tasks werden in useCategories.js geladen gleich mir jeweiliger kategorie
-const { categoryTasks, currentCategory } = useCategories();
+const { createTask, tasks } = useTasks();
+const { currentCategory } = useCategories();
+
 // Form-Daten
 const newTaskTitle = ref('')
 const newTaskDescription = ref('')
@@ -21,7 +21,7 @@ const handleCreateTask = () => {
     alert('Bitte Titel und geschätzte Kosten eingeben')
     return
   }
-  createTask(newTaskTitle.value, newTaskDescription.value, newTaskCostsEstimated.value, newTaskComment.value, newTaskDeadline.value)
+  createTask(newTaskTitle.value, newTaskDescription.value, newTaskCostsEstimated.value, newTaskComment.value, newTaskDeadline.value, currentCategory.value.id)
   // Felder leeren & Modal schließen
   newTaskTitle.value = ''
   newTaskDescription.value = ''
@@ -70,11 +70,11 @@ const handleCreateTask = () => {
     </div>
   </Modal>
 
-  <div v-if="categoryTasks.length > 0" class="flex flex-col gap-10 mt-8">
+  <div v-if="tasks.length > 0" class="flex flex-col gap-10 mt-8">
     <TaskItem
-      v-for="categoryTask in categoryTasks"
-      :key="categoryTask.id"
-      :categoryTask="categoryTask" />
+      v-for="task in tasks"
+      :key="task.id"
+      :task="task" />
 
   </div>
   <div v-else class="text-gray-400 mt-8">Noch keine Aufgaben vorhanden.</div>

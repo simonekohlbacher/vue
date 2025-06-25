@@ -13,7 +13,6 @@ const { currentCategory, setCategory, deleteCategory, formatInputToDate, formatD
 // Wenn Seite lädt, setze die Kategorie basierend auf der ID in der URL
 onMounted(() => {
   setCategory(route.params.id)
-
 })
 
 

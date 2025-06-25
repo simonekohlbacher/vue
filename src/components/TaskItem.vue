@@ -7,7 +7,7 @@ const { deleteTask, formatCurrency, updateTaskField } = useTasks()
 const { formatInputToDate, currentCategory } = useCategories()
 
 const props = defineProps({
-  categoryTask: {
+  task: {
     type: Object,
     required: true
   }
@@ -34,12 +34,12 @@ const editState = reactive({
 
 onMounted(() => {
   Object.assign(localTask, {
-    title: props.categoryTask.title,
-    description: props.categoryTask.description,
-    state: props.categoryTask.state,
-    costs_estimate: props.categoryTask.costs_estimate ?? 0,
-    costs: props.categoryTask.costs ?? 0,
-    deadline: props.categoryTask.deadline ?? null
+    title: props.task.title,
+    description: props.task.description,
+    state: props.task.state,
+    costs_estimate: props.task.costs_estimate ?? 0,
+    costs: props.task.costs ?? 0,
+    deadline: props.task.deadline ?? null
   })
 })
 
@@ -80,13 +80,12 @@ function handleEdit(field) {
     localTask[field] = editState[field].value
   }
   const payloadValue = localTask[field] || ''
-  updateTaskField(props.categoryTask.id, field, payloadValue)
+  updateTaskField(props.task.id, field, payloadValue)
 
   if (editState[field]) {
     editState[field].editing = false
   }
 }
-
 
 
 function handleDeleteTask(taskId) {
@@ -126,7 +125,7 @@ function handleDeleteTask(taskId) {
 
     <!-- Löschen -->
     <button
-      @click="handleDeleteTask(props.categoryTask.id)"
+      @click="handleDeleteTask(props.task.id)"
       class="absolute top-1 right-2 hover:text-accent">
       <font-awesome-icon :icon="['fas', 'trash']" />
     </button>

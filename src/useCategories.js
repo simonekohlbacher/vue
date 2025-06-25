@@ -2,13 +2,12 @@ import { onMounted, readonly, ref } from 'vue'
 import { pb } from './pocketbase.js'
 import { useAuth } from '@/useAuth.js'
 import { useWebNotification } from '@vueuse/core'
-
+import { useTasks } from '@/useTasks.js'
 
 // singleton variablen
 const categories = ref([])
 const currentCategory = ref(null)
-// nur die tasks der aktuellen Kategorie
-const categoryTasks = ref([])
+const { fetchTasks } = useTasks()
 
 export function useCategories() {
   const { currentUser } = useAuth()
@@ -21,11 +20,23 @@ export function useCategories() {
   // fetch categories von DB
   const fetchCategories = async () => {
     try {
-      categories.value = await pb.collection('categories').getFullList({
-        // nur die Kategorien des aktuellen Benutzers
+      const catList = await pb.collection('categories').getFullList({
         filter: `user = "${currentUser.value.id}"`,
         expand: 'user',
       })
+
+      for (const cat of catList) {
+        const tasks = await pb.collection('tasks').getFullList({
+          filter: `category = "${cat.id}" && user = "${currentUser.value.id}"`,
+        })
+        const newState = checkCategoryState(tasks)
+        // nur updaten, wenn sich was geändert hat
+        if (cat.state !== newState) {
+          await pb.collection('categories').update(cat.id, { state: newState })
+          cat.state = newState // lokal auch aktualisieren
+        }
+      }
+      categories.value = catList
       // lädt die aktuelle Kategorie aus dem localStorage, falls vorhanden, damit beim seitenreload die letzte Kategorie erhalten bleibt (user auf detailseite bleibt und kein error kommt)
       const savedCurrentCategory = JSON.parse(localStorage.currentCategory ?? 'null') ?? null
       if (savedCurrentCategory) {
@@ -36,6 +47,7 @@ export function useCategories() {
     }
   }
 
+
   // ---------------------------------------------
   // kategorie setzen
   const setCategory = async (categoryId) => {
@@ -44,10 +56,8 @@ export function useCategories() {
       currentCategory.value = foundCategory
       localStorage.currentCategory = JSON.stringify(foundCategory)
 
-      // tasks laden
-      categoryTasks.value = await pb.collection('tasks').getFullList({
-        filter: `category = "${categoryId}" && user = "${currentUser.value.id}"`,
-      });
+      // Tasks neu laden, wenn Kategorie wechselt
+      await fetchTasks(foundCategory.id)
     }
   }
 
@@ -140,13 +150,26 @@ export function useCategories() {
     return d.toISOString()
   }
 
+  // ---------------------------------------------
+  // checkt den Status der Kategorie basierend auf den jeweiligen Tasks-Stati
+  function checkCategoryState(tasks) {
+    if (!tasks || tasks.length === 0) return 'not_started'
+
+    const hasInProgress = tasks.some(task => task.state === 'in_progress')
+    const allDone = tasks.every(task => task.state === 'done')
+
+    if (allDone) return 'done'
+    if (hasInProgress) return 'in_progress'
+    return 'not_started'
+  }
+
+
 
   // ---------------------------------------------
   // gibt funktionen zurück
   return {
     categories: readonly(categories),
     currentCategory: currentCategory,
-    categoryTasks: readonly(categoryTasks),
     fetchCategories,
     setCategory,
     createCategory,
@@ -154,6 +177,7 @@ export function useCategories() {
     getStateIcon,
     formatDateToInput,
     formatInputToDate,
-    updateCategoryField
+    updateCategoryField,
+    checkCategoryState
   }
 }
