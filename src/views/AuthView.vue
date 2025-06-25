@@ -9,7 +9,7 @@ const password = ref('');
 const name = ref('');
 const long = ref('');
 const lat = ref('');
-const budget = ref(0);
+const budget = ref('');
 const start = ref('');
 const isRegister = ref(false); // Toggle: false = Login, true = Register
 const { login, register } = useAuth();
@@ -90,6 +90,7 @@ async function handleSubmit() {
                 <input v-model="budget" type="number" placeholder="Budget" required />
               </label>
 
+              <span v-if="isRegister" class="text-xs mt-2 text-left">Baustart</span>
               <label v-if="isRegister" class="input validator w-full">
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
