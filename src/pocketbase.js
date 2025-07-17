@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const pbUrl = 'http://127.0.0.1:8090';
+const pbUrl = 'https://pocketbase-o45l.onrender.com';
 
 export const pb = new PocketBase(pbUrl);
 
