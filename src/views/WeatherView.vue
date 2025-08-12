@@ -9,44 +9,34 @@ const { currentUser } = useAuth();
 const cityName = ref('');
 
 onMounted(async () => {
-  // Meteomatics API Zugangsdaten und Parameter
-  // https://www.meteomatics.com/en/api/getting-started/
-  const username = 'fhooe_kohlbacher_simone'
-  const password = '5kIdMj0L3s'
-  const parameters = 't_2m:C,precip_1h:mm,wind_speed_10m:ms'
-  const proxyUrl = 'https://proxy-c1wt.onrender.com';
+  const parameters = 't_2m:C,precip_1h:mm,wind_speed_10m:ms';
+  const proxyUrl = 'https://proxy-c1wt.onrender.com/weather';
 
-  const response = await fetch(url);
-  const data = await response.json();
-  const lat = currentUser.value.lat || 48.2082 // Default to Vienna if not set
-  const long = currentUser.value.long || 16.3738 // Default to Vienna if not set
-  const start = new Date().toISOString()
-  const end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-  const interval = "PT3H"
+  const lat = currentUser.value.lat || 48.2082;
+  const long = currentUser.value.long || 16.3738;
+  const start = new Date().toISOString();
+  const end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const interval = "PT3H";
+
   cityName.value = await getCityFromCoords(lat, long);
 
   const url = `${proxyUrl}?start=${start}&end=${end}&interval=${interval}&parameters=${parameters}&lat=${lat}&long=${long}`;
   //const url = `https://api.meteomatics.com/${start}--${end}:${interval}/${parameters}/${lat},${long}/json`
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: 'Basic ' + btoa(`${username}:${password}`)
-      }
-    })
-    const data = await response.json()
+    const response = await fetch(url);
+    const data = await response.json();
 
     weatherData.value = data.data[0].coordinates[0].dates.map((_, i) => ({
       date: data.data[0].coordinates[0].dates[i].date,
       t_2m: data.data[0].coordinates[0].dates[i].value,
       precip_1h: data.data[1].coordinates[0].dates[i].value,
       wind_speed_10m: data.data[2].coordinates[0].dates[i].value
-    }))
-
+    }));
   } catch (error) {
-    console.error('Fehler beim Laden:', error)
+    console.error('Fehler beim Laden:', error);
   }
-})
+});
 
 
 async function getCityFromCoords(lat, long) {
