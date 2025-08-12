@@ -15,7 +15,6 @@ onMounted(async () => {
   const password = '5kIdMj0L3s'
   const parameters = 't_2m:C,precip_1h:mm,wind_speed_10m:ms'
   const proxyUrl = 'https://proxy-c1wt.onrender.com';
-  const url = `${proxyUrl}?start=${start}&end=${end}&interval=${interval}&parameters=${parameters}&lat=${lat}&long=${long}`;
 
   const response = await fetch(url);
   const data = await response.json();
@@ -26,6 +25,7 @@ onMounted(async () => {
   const interval = "PT3H"
   cityName.value = await getCityFromCoords(lat, long);
 
+  const url = `${proxyUrl}?start=${start}&end=${end}&interval=${interval}&parameters=${parameters}&lat=${lat}&long=${long}`;
   //const url = `https://api.meteomatics.com/${start}--${end}:${interval}/${parameters}/${lat},${long}/json`
 
   try {
