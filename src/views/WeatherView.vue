@@ -14,6 +14,11 @@ onMounted(async () => {
   const username = 'fhooe_kohlbacher_simone'
   const password = '5kIdMj0L3s'
   const parameters = 't_2m:C,precip_1h:mm,wind_speed_10m:ms'
+  const proxyUrl = 'https://proxy-c1wt.onrender.com';
+  const url = `${proxyUrl}?start=${start}&end=${end}&interval=${interval}&parameters=${parameters}&lat=${lat}&long=${long}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
   const lat = currentUser.value.lat || 48.2082 // Default to Vienna if not set
   const long = currentUser.value.long || 16.3738 // Default to Vienna if not set
   const start = new Date().toISOString()
@@ -21,7 +26,7 @@ onMounted(async () => {
   const interval = "PT3H"
   cityName.value = await getCityFromCoords(lat, long);
 
-  const url = `https://api.meteomatics.com/${start}--${end}:${interval}/${parameters}/${lat},${long}/json`
+  //const url = `https://api.meteomatics.com/${start}--${end}:${interval}/${parameters}/${lat},${long}/json`
 
   try {
     const response = await fetch(url, {
