@@ -13,7 +13,7 @@ if (!currentUser.value && pb.authStore.isValid && pb.authStore.record) {
 export function useAuth() {
   const login = async (email, password) => {
     try {
-      const authData = await pb.collection('users').authWithPassword(email, password)
+      const authData = await pb.collection('users').authWithPassword(email, password, { autoCancel: false })
       currentUser.value = authData.record
       return true
     } catch (error) {
