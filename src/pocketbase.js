@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const pbUrl = 'https://pocketbase-o45l.onrender.com';
+const pbUrl = 'https://pocketbase-production-4ff4.up.railway.app//';
 
 export const pb = new PocketBase(pbUrl);
 
