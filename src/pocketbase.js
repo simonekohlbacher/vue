@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const pbUrl = 'https://pocketbase-production-4ff4.up.railway.app/';
+const pbUrl = 'http://pocketbase-lively-snow-1768.fly.dev/';
 
 export const pb = new PocketBase(pbUrl);
 
