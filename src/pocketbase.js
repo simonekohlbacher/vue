@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const pbUrl = 'http://pocketbase-lively-snow-1768.fly.dev/';
+const pbUrl = 'http://pocketbase-lively-snow-1768.fly.dev';
 
 export const pb = new PocketBase(pbUrl);
 
