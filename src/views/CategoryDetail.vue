@@ -124,7 +124,7 @@ function handleDeleteCategory(categoryId) {
             class="w-full max-w-lg rounded-lg shadow-lg mx-auto"
           />
         </div>
-        <div class="pt-6 border-t border-gray-200">
+        <div class="pt-6 border-t border-base-300">
           <h2 class="text-lg font-semibold mb-4">Aufgaben</h2>
           <TaskList/>
         </div>

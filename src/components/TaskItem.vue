@@ -98,45 +98,50 @@ function handleDeleteTask(taskId) {
 </script>
 
 <template>
-  <div class="relative rounded-2xl shadow-md p-6 flex flex-col gap-4 transition duration-200 hover:shadow-xl">
+  <div class="relative rounded-2xl border border-base-300 p-6 flex flex-col gap-4 transition duration-200 hover:shadow-xl">
 
-    <!-- Deadline -->
-    <div class="absolute top-8 right-2 flex items-center gap-1 text-sm">
-      <font-awesome-icon :icon="['fas', 'calendar-days']" />
-      <span
-        v-if="!editState.deadline.editing"
-        class="cursor-pointer select-none hover:text-accent"
-        @click="startEditing('deadline')"
-      >
-        {{ localTask.deadline ? new Date(localTask.deadline).toLocaleDateString() : 'Kein Datum' }}
+    <div class="flex flex-row justify-between">
+
+      <!-- Titel -->
+      <h2 class="text-xl font-bold">
+      <span v-if="!editState.title.editing" class="cursor-pointer select-none" @click="startEditing('title')">
+        {{ localTask.title }}
       </span>
-      <input
-        v-else
-        type="date"
-        v-model="editState.deadline.value"
-        :max="currentCategory.deadline.substring(0, 10)"
-        @blur="() => handleEdit('deadline')"
-        @keyup.enter="() => handleEdit('deadline')"
-        class="border rounded px-2 py-1 font-medium ml-2"
-        autofocus
-      />
+        <input v-else v-model="editState.title.value" @blur="() => handleEdit('title')" @keyup.enter="() => handleEdit('title')" class="border rounded px-2 py-1 w-full text-xl font-bold" autofocus />
+      </h2>
 
-    </div>
+      <div class="flex flex-row gap-4">
+    <!-- Deadline -->
+      <div class=" flex items-center gap-1 text-sm">
+        <font-awesome-icon :icon="['fas', 'calendar-days']" />
+        <span
+          v-if="!editState.deadline.editing"
+          class="cursor-pointer select-none hover:text-accent"
+          @click="startEditing('deadline')"
+        >
+          {{ localTask.deadline ? new Date(localTask.deadline).toLocaleDateString() : 'Kein Datum' }}
+        </span>
+        <input
+          v-else
+          type="date"
+          v-model="editState.deadline.value"
+          :max="currentCategory.deadline.substring(0, 10)"
+          @blur="() => handleEdit('deadline')"
+          @keyup.enter="() => handleEdit('deadline')"
+          class="border rounded px-2 py-1 font-medium ml-2"
+          autofocus
+        />
+      </div>
 
     <!-- Löschen -->
     <button
       @click="handleDeleteTask(props.task.id)"
-      class="absolute top-1 right-2 hover:text-accent">
+      class=" hover:text-accent">
       <font-awesome-icon :icon="['fas', 'trash']" />
     </button>
 
-    <!-- Titel -->
-    <h2 class="text-xl font-bold">
-      <span v-if="!editState.title.editing" class="cursor-pointer select-none" @click="startEditing('title')">
-        {{ localTask.title }}
-      </span>
-      <input v-else v-model="editState.title.value" @blur="() => handleEdit('title')" @keyup.enter="() => handleEdit('title')" class="border rounded px-2 py-1 w-full text-xl font-bold" autofocus />
-    </h2>
+      </div>
+    </div>
 
     <!-- Beschreibung -->
     <div v-if="localTask.description">

@@ -29,17 +29,17 @@ const showTimer = computed(() => {
 <template>
   <AppNavigation>
 
-    <div class="m-12">
+    <div class="sm:m-12">
       <h2 class="text-3xl font-bold">Servus {{ currentUser.name }}!</h2>
       <p class="text-xl font-bold mb-8">Heute ist ein schöner Tag zum Bauen.</p>
       <hr>
     </div>
 
-    <div v-if="showTimer" class="ml-20 mb-20">
+    <div v-if="showTimer" class="sm:ml-20 mb-20">
       <Timer />
     </div>
 
-    <div class="p-20">
+    <div class="sm:p-20">
       <h2 class="text-3xl font-bold mb-2">ToDos</h2>
       <p>Hier siehst du alle deine Projektkategorien auf einen Blick. Verwalte sie, füge neue hinzu und behalte deine Baustelle im Griff. Das Bearbeiten einer Kategorie kannst direkt in der jeweiligen Detail-Ansicht mit Klick auf das jeweilige Feld vornehmen. Der Status aktualisiert sich je nach Fortschritt der Aufgaben der jeweiligen Kategorie.</p>
       <div class="my-6 ">
@@ -53,7 +53,7 @@ const showTimer = computed(() => {
       <TimeLine />
     </div>
 
-    <div class="p-20">
+    <div class="sm:p-20">
       <div class="mb-6 p-4  rounded-lg shadow-sm border ">
         <dl class="space-y-2">
           <div class="flex justify-between">

@@ -51,24 +51,24 @@ const updateCountdown = () => {
   <div class="grid auto-cols-max grid-flow-col gap-5 text-center">
     <div class="flex flex-col">
       <div class="flex flex-col">
-        <span class="font-mono text-5xl">{{ days }}</span>
+        <span class="font-mono text-3xl">{{ days }}</span>
         Tage
       </div>
     </div>
     <div class="flex flex-col">
-    <span class="countdown font-mono text-5xl">
+    <span class="countdown font-mono text-3xl">
       <span :style="`--value:${hours}`">{{ hours }}</span>
     </span>
       Stunden
     </div>
     <div class="flex flex-col">
-    <span class="countdown font-mono text-5xl">
+    <span class="countdown font-mono text-3xl">
       <span :style="`--value:${minutes}`">{{ minutes }}</span>
     </span>
       Minuten
     </div>
     <div class="flex flex-col">
-    <span class="countdown font-mono text-5xl">
+    <span class="countdown font-mono text-3xl">
       <span :style="`--value:${seconds}`">{{ seconds }}</span>
     </span>
       Sekunden

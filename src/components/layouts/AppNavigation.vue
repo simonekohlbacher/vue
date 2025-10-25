@@ -45,7 +45,7 @@ function toggleDarkMode() {
 
 //  Anwendung auf <html>
 function updateTheme() {
-  const theme = darkMode.value ? 'forest' : 'light'
+  const theme = darkMode.value ? 'forest' : 'autumn'
   document.documentElement.setAttribute('data-theme', theme)
 }
 </script>
@@ -57,10 +57,10 @@ function updateTheme() {
     <p class="text-lg italic mt-2">{{ currentWisdom }}</p>
   </div>
 
-  <div class="flex min-h-screen overflow-hidden">
+  <div class="flex min-h-screen max-w-[100vw] overflow-x-hidden">
     <SideBar />
     <!-- Hauptbereich -->
-    <div class="flex flex-col flex-grow">
+    <div class="ml-20 sm:ml-60 flex flex-col flex-grow">
       <header class="sticky top-0 shadow p-4 flex justify-end items-center">
         <!-- Logout & Theme Switch -->
         <div class="flex items-center gap-4">
@@ -77,7 +77,7 @@ function updateTheme() {
 
       </header>
 
-      <main class="flex-grow overflow-y-auto p-6">
+      <main class="flex-grow overflow-x-hidden p-4 sm:p-6 max-w-[80vw]">
         <!-- Page-Content -->
         <slot />
       </main>

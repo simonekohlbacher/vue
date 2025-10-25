@@ -4,6 +4,7 @@ import { useAuth } from '@/useAuth.js'
 import { useWebNotification } from '@vueuse/core'
 import { useTasks } from '@/useTasks.js'
 
+let isFetching = false
 // singleton variablen
 const categories = ref([])
 const currentCategory = ref(null)
@@ -19,6 +20,8 @@ export function useCategories() {
   // ---------------------------------------------
   // fetch categories von DB
   const fetchCategories = async () => {
+    if (isFetching) return
+    isFetching = true
     try {
       const catList = await pb.collection('categories').getFullList({
         filter: `user = "${currentUser.value.id}"`,
@@ -42,8 +45,11 @@ export function useCategories() {
       if (savedCurrentCategory) {
         await setCategory(savedCurrentCategory.id)
       }
-    } catch (e) {
-      console.error('Fehler beim Laden der Kategorien:', e)
+    }
+    catch (e) {
+      if (e.status !== 0) console.error('Fehler beim Laden der Kategorien:', e)
+    } finally {
+      isFetching = false
     }
   }
 
