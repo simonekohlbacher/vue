@@ -8,10 +8,10 @@ let isFetching = false
 // singleton variablen
 const categories = ref([])
 const currentCategory = ref(null)
-const { fetchTasks } = useTasks()
 
 export function useCategories() {
   const { currentUser } = useAuth()
+  const { fetchCategoryTasks } = useTasks()
 
   onMounted(() => {
     fetchCategories()
@@ -45,14 +45,12 @@ export function useCategories() {
       if (savedCurrentCategory) {
         await setCategory(savedCurrentCategory.id)
       }
-    }
-    catch (e) {
+    } catch (e) {
       if (e.status !== 0) console.error('Fehler beim Laden der Kategorien:', e)
     } finally {
       isFetching = false
     }
   }
-
 
   // ---------------------------------------------
   // kategorie setzen
@@ -63,7 +61,7 @@ export function useCategories() {
       localStorage.currentCategory = JSON.stringify(foundCategory)
 
       // Tasks neu laden, wenn Kategorie wechselt
-      await fetchTasks(foundCategory.id)
+      await fetchCategoryTasks(foundCategory.id)
     }
   }
 
@@ -122,13 +120,16 @@ export function useCategories() {
   // font awesome icon je nach status
   const getStateIcon = (state) => {
     switch (state) {
-      case 'in_progress': return ['fas', 'hourglass-half'];
-      case 'done':return ['fas', 'circle-check']
-      case 'not_started':return ['fas', 'ban']
-      default:return ['fas', 'ban']
+      case 'in_progress':
+        return ['fas', 'hourglass-half']
+      case 'done':
+        return ['fas', 'circle-check']
+      case 'not_started':
+        return ['fas', 'ban']
+      default:
+        return ['fas', 'ban']
     }
-  };
-
+  }
 
   // ---------------------------------------------
   // kategorie felder bearbeiten
@@ -137,7 +138,6 @@ export function useCategories() {
       [field]: value,
     })
   }
-
 
   // ---------------------------------------------
   // Hilfsfunktionenen für Datum <-> input[type=date]
@@ -161,15 +161,13 @@ export function useCategories() {
   function checkCategoryState(tasks) {
     if (!tasks || tasks.length === 0) return 'not_started'
 
-    const hasInProgress = tasks.some(task => task.state === 'in_progress')
-    const allDone = tasks.every(task => task.state === 'done')
+    const hasInProgress = tasks.some((task) => task.state === 'in_progress')
+    const allDone = tasks.every((task) => task.state === 'done')
 
     if (allDone) return 'done'
     if (hasInProgress) return 'in_progress'
     return 'not_started'
   }
-
-
 
   // ---------------------------------------------
   // gibt funktionen zurück
@@ -184,6 +182,6 @@ export function useCategories() {
     formatDateToInput,
     formatInputToDate,
     updateCategoryField,
-    checkCategoryState
+    checkCategoryState,
   }
 }

@@ -1,12 +1,12 @@
 <script setup>
-import TaskItem from "@/components/TaskItem.vue";
-import Modal from "@/components/Modal.vue";
+import TaskItem from '@/components/TaskItem.vue'
+import Modal from '@/components/Modal.vue'
 import { ref } from 'vue'
 import { useTasks } from '@/useTasks.js'
 import { useCategories } from '@/useCategories.js'
 
-const { createTask, tasks } = useTasks();
-const { currentCategory } = useCategories();
+const { createTask, categoryTasks } = useTasks()
+const { currentCategory } = useCategories()
 
 // Form-Daten
 const newTaskTitle = ref('')
@@ -21,7 +21,14 @@ const handleCreateTask = () => {
     alert('Bitte Titel und geschätzte Kosten eingeben')
     return
   }
-  createTask(newTaskTitle.value, newTaskDescription.value, newTaskCostsEstimated.value, newTaskComment.value, newTaskDeadline.value, currentCategory.value.id)
+  createTask(
+    newTaskTitle.value,
+    newTaskDescription.value,
+    newTaskCostsEstimated.value,
+    newTaskComment.value,
+    newTaskDeadline.value,
+    currentCategory.value.id,
+  )
   // Felder leeren & Modal schließen
   newTaskTitle.value = ''
   newTaskDescription.value = ''
@@ -32,7 +39,6 @@ const handleCreateTask = () => {
     modalRef.value.close()
   }
 }
-
 </script>
 
 <template>
@@ -43,42 +49,57 @@ const handleCreateTask = () => {
 
       <label class="floating-label w-full">
         <span>Titel*</span>
-        <input v-model="newTaskTitle" type="text" placeholder="Titel" class="input input-sm w-full"/>
+        <input
+          v-model="newTaskTitle"
+          type="text"
+          placeholder="Titel"
+          class="input input-sm w-full"
+        />
       </label>
 
       <label class="floating-label w-full">
         <span>Beschreibung</span>
-        <textarea v-model="newTaskDescription" placeholder="Beschreibung" class="textarea textarea-sm w-full"></textarea>
+        <textarea
+          v-model="newTaskDescription"
+          placeholder="Beschreibung"
+          class="textarea textarea-sm w-full"
+        ></textarea>
       </label>
 
       <label class="floating-label w-full">
         <span>Geschätzte Kosten*</span>
-        <input v-model="newTaskCostsEstimated" type="number" placeholder="0" class="input input-sm w-full"/>
+        <input
+          v-model="newTaskCostsEstimated"
+          type="number"
+          placeholder="0"
+          class="input input-sm w-full"
+        />
       </label>
 
       <label class="floating-label w-full">
         <span>Kommentar</span>
-        <textarea v-model="newTaskComment" placeholder="Kommentar" class="textarea textarea-xs w-full"></textarea>
+        <textarea
+          v-model="newTaskComment"
+          placeholder="Kommentar"
+          class="textarea textarea-xs w-full"
+        ></textarea>
       </label>
 
       <label class="floating-label w-full">
         <span>Deadline*</span>
-        <input v-model="newTaskDeadline" type="date" class="input input-sm w-full"
-               :max="currentCategory.deadline.substring(0, 10)" />
+        <input
+          v-model="newTaskDeadline"
+          type="date"
+          class="input input-sm w-full"
+          :max="currentCategory.deadline.substring(0, 10)"
+        />
       </label>
       <button class="btn btn-success" @click="handleCreateTask">Speichern</button>
     </div>
   </Modal>
 
-  <div v-if="tasks.length > 0" class="flex flex-col gap-10 mt-8">
-    <TaskItem
-      v-for="task in tasks"
-      :key="task.id"
-      :task="task" />
-
+  <div v-if="categoryTasks.length > 0" class="flex flex-col gap-10 mt-8">
+    <TaskItem v-for="task in categoryTasks" :key="task.id" :task="task" />
   </div>
   <div v-else class="text-gray-400 mt-8">Noch keine Aufgaben vorhanden.</div>
-
 </template>
-
-
